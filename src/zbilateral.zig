@@ -26,7 +26,7 @@ pub const ZbilateralData = struct {
     peak: f32,
 };
 
-export fn zboxblurGetFrame(n: c_int, activationReason: c_int, instanceData: ?*anyopaque, frameData: ?*?*anyopaque, frameCtx: ?*c.VSFrameContext, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) ?*const c.VSFrame {
+export fn zbilateralGetFrame(n: c_int, activationReason: c_int, instanceData: ?*anyopaque, frameData: ?*?*anyopaque, frameCtx: ?*c.VSFrameContext, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) ?*const c.VSFrame {
     _ = frameData;
     var d: *ZbilateralData = @ptrCast(@alignCast(instanceData));
 
@@ -135,7 +135,7 @@ export fn zboxblurGetFrame(n: c_int, activationReason: c_int, instanceData: ?*an
     return null;
 }
 
-export fn zboxblurFree(instanceData: ?*anyopaque, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) void {
+export fn zbilateralFree(instanceData: ?*anyopaque, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) void {
     _ = core;
     var d: *ZbilateralData = @ptrCast(@alignCast(instanceData));
 
@@ -161,7 +161,7 @@ export fn zboxblurFree(instanceData: ?*anyopaque, core: ?*c.VSCore, vsapi: ?*con
     allocator.destroy(d);
 }
 
-export fn zboxblurCreate(in: ?*const c.VSMap, out: ?*c.VSMap, userData: ?*anyopaque, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) void {
+export fn zbilateralCreate(in: ?*const c.VSMap, out: ?*c.VSMap, userData: ?*anyopaque, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) void {
     _ = userData;
     var d: ZbilateralData = undefined;
     var err: c_int = undefined;
@@ -416,12 +416,12 @@ export fn zboxblurCreate(in: ?*const c.VSMap, out: ?*c.VSMap, userData: ?*anyopa
             .requestPattern = c.rpStrictSpatial,
         },
     };
-    vsapi.?.createVideoFilter.?(out, "Bilateral", vi, zboxblurGetFrame, zboxblurFree, c.fmParallel, &deps, if (d.joint) 2 else 1, data, core);
+    vsapi.?.createVideoFilter.?(out, "Bilateral", vi, zbilateralGetFrame, zbilateralFree, c.fmParallel, &deps, if (d.joint) 2 else 1, data, core);
 }
 
 export fn VapourSynthPluginInit2(plugin: *c.VSPlugin, vspapi: *const c.VSPLUGINAPI) void {
     _ = vspapi.configPlugin.?("com.julek.zbilateral", "zbilateral", "Bilateral filter", c.VS_MAKE_VERSION(1, 0), c.VAPOURSYNTH_API_VERSION, 0, plugin);
-    _ = vspapi.registerFunction.?("Bilateral", "clip:vnode;ref:vnode:opt;sigmaS:float[]:opt;sigmaR:float[]:opt;planes:int[]:opt;algorithm:int[]:opt;PBFICnum:int[]:opt", "clip:vnode;", zboxblurCreate, null, plugin);
+    _ = vspapi.registerFunction.?("Bilateral", "clip:vnode;ref:vnode:opt;sigmaS:float[]:opt;sigmaR:float[]:opt;planes:int[]:opt;algorithm:int[]:opt;PBFICnum:int[]:opt", "clip:vnode;", zbilateralCreate, null, plugin);
 }
 
 inline fn Gaussian_Function_Spatial_LUT_Generation(gs_lut: [*]f32, upper: usize, sigmaS: f64) void {

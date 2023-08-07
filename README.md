@@ -20,13 +20,13 @@ zbilateral.Bilateral(vnode clip[, vnode ref, float[] sigmaS=3.0, float[] sigmaR=
     sigma of Gaussian function to calculate spatial weight.\
     The scale of this parameter is equivalent to pixel distance.\
     Larger sigmaS results in larger filtering radius as well as stronger smoothing.\
-    Use an array to assign sigmaS for each plane. If sigmaS for the second plane is not specified, it will be set according to the sigmaS of first plane and sub-sampling.\
+    Use an array to assign sigmaS for each plane. If sigmaS for the second plane is not specified, it will be set according to the sigmaS of first plane and sub-sampling.
 
 - sigmaR: (Default: 0.02)\
     sigma of Gaussian function to calculate range weight.\
     The scale of this parameter is the same as pixel value ranging in [0,1].\
     Smaller sigmaR preserves edges better, may also leads to weaker smoothing.\
-    Use an array to specify sigmaR for each plane, otherwise the same sigmaR is used for all the planes.\
+    Use an array to specify sigmaR for each plane, otherwise the same sigmaR is used for all the planes.
 
 - planes:\
     An array to specify which planes to process.\
