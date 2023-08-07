@@ -7,7 +7,7 @@ Currently only ``algorithm=2`` is working (and I believe no one uses 1, since it
 
 ## Usage
 ```python
-zboxblur.Blur(vnode clip[, vnode ref, float[] sigmaS=3.0, float[] sigmaR=0.02, int[] planes=[], int[] algorithm=0, int[] PBFICnum=[]])
+zbilateral.Bilateral(vnode clip[, vnode ref, float[] sigmaS=3.0, float[] sigmaR=0.02, int[] planes=[], int[] algorithm=0, int[] PBFICnum=[]])
 ```
 ### Parameters:
 
