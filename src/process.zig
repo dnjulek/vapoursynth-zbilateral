@@ -8,7 +8,7 @@ inline fn absDiff(x: anytype, y: anytype) @TypeOf(x) {
 }
 
 inline fn stride_cal(comptime T: type, width: usize) usize {
-    var alignment: usize = 32 / @sizeOf(T);
+    const alignment: usize = 32 / @sizeOf(T);
     return if (width % alignment == 0) width else (width / alignment + 1) * alignment;
 }
 
@@ -59,9 +59,9 @@ pub inline fn Bilateral2D_2(comptime T: type, _dstp: [*]u8, _srcp: [*]const u8, 
     const bufwidth: usize = width + radius * 2;
     const bufstride: usize = stride_cal(T, bufwidth);
 
-    var srcbuff_arr = allocator.alignedAlloc(T, 32, bufheight * bufstride) catch unreachable;
+    const srcbuff_arr = allocator.alignedAlloc(T, 32, bufheight * bufstride) catch unreachable;
     defer allocator.free(srcbuff_arr);
-    var srcbuff: [*]T = srcbuff_arr.ptr;
+    const srcbuff: [*]T = srcbuff_arr.ptr;
 
     data2buff(T, srcbuff, srcp, radius, bufheight, bufwidth, bufstride, height, width, stride);
 
@@ -125,12 +125,12 @@ pub inline fn Bilateral2D_2ref(comptime T: type, _dstp: [*]u8, _srcp: [*]const u
     const bufwidth: usize = width + radius * 2;
     const bufstride: usize = stride_cal(T, bufwidth);
 
-    var srcbuff_arr = allocator.alignedAlloc(T, 32, bufheight * bufstride) catch unreachable;
-    var refbuff_arr = allocator.alignedAlloc(T, 32, bufheight * bufstride) catch unreachable;
+    const srcbuff_arr = allocator.alignedAlloc(T, 32, bufheight * bufstride) catch unreachable;
+    const refbuff_arr = allocator.alignedAlloc(T, 32, bufheight * bufstride) catch unreachable;
     defer allocator.free(srcbuff_arr);
     defer allocator.free(refbuff_arr);
-    var srcbuff: [*]T = srcbuff_arr.ptr;
-    var refbuff: [*]T = refbuff_arr.ptr;
+    const srcbuff: [*]T = srcbuff_arr.ptr;
+    const refbuff: [*]T = refbuff_arr.ptr;
 
     data2buff(T, srcbuff, srcp, radius, bufheight, bufwidth, bufstride, height, width, stride);
     data2buff(T, refbuff, refp, radius, bufheight, bufwidth, bufstride, height, width, stride);

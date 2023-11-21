@@ -28,7 +28,7 @@ pub const ZbilateralData = struct {
 
 export fn zbilateralGetFrame(n: c_int, activationReason: c_int, instanceData: ?*anyopaque, frameData: ?*?*anyopaque, frameCtx: ?*c.VSFrameContext, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) ?*const c.VSFrame {
     _ = frameData;
-    var d: *ZbilateralData = @ptrCast(@alignCast(instanceData));
+    const d: *ZbilateralData = @ptrCast(@alignCast(instanceData));
 
     if (activationReason == c.arInitial) {
         vsapi.?.requestFrameFilter.?(n, d.node1, frameCtx);
@@ -44,7 +44,7 @@ export fn zbilateralGetFrame(n: c_int, activationReason: c_int, instanceData: ?*
         const height = vsapi.?.getFrameHeight.?(src, 0);
         var planes = [_]c_int{ 0, 1, 2 };
         var cp_planes = [_]?*const c.VSFrame{ if (d.process[0]) null else src, if (d.process[1]) null else src, if (d.process[2]) null else src };
-        var dst = vsapi.?.newVideoFrame2.?(fi, width, height, &cp_planes, &planes, src, core);
+        const dst = vsapi.?.newVideoFrame2.?(fi, width, height, &cp_planes, &planes, src, core);
         const psize: u6 = d.psize;
         const peak: f32 = d.peak;
 
@@ -52,9 +52,9 @@ export fn zbilateralGetFrame(n: c_int, activationReason: c_int, instanceData: ?*
         while (plane < fi.*.numPlanes) : (plane += 1) {
             const uplane: usize = @intCast(plane);
             if (d.process[uplane]) {
-                var srcp: [*]const u8 = vsapi.?.getReadPtr.?(src, plane);
-                var refp: [*]const u8 = vsapi.?.getReadPtr.?(ref, plane);
-                var dstp: [*]u8 = vsapi.?.getWritePtr.?(dst, plane);
+                const srcp: [*]const u8 = vsapi.?.getReadPtr.?(src, plane);
+                const refp: [*]const u8 = vsapi.?.getReadPtr.?(ref, plane);
+                const dstp: [*]u8 = vsapi.?.getWritePtr.?(dst, plane);
                 const stride: usize = @intCast(vsapi.?.getStride.?(src, plane));
                 const h: usize = @intCast(vsapi.?.getFrameHeight.?(src, plane));
                 const w: usize = @intCast(vsapi.?.getFrameWidth.?(src, plane));
@@ -137,7 +137,7 @@ export fn zbilateralGetFrame(n: c_int, activationReason: c_int, instanceData: ?*
 
 export fn zbilateralFree(instanceData: ?*anyopaque, core: ?*c.VSCore, vsapi: ?*const c.VSAPI) callconv(.C) void {
     _ = core;
-    var d: *ZbilateralData = @ptrCast(@alignCast(instanceData));
+    const d: *ZbilateralData = @ptrCast(@alignCast(instanceData));
 
     vsapi.?.freeNode.?(d.node1);
     if (d.joint) {
@@ -235,7 +235,7 @@ export fn zbilateralCreate(in: ?*const c.VSMap, out: ?*c.VSMap, userData: ?*anyo
     }
 
     i = 0;
-    var n: i32 = vi.format.numPlanes;
+    const n: i32 = vi.format.numPlanes;
     m = vsapi.?.mapNumElements.?(in, "planes");
     while (i < 3) : (i += 1) {
         if ((i > 0) and (yuv)) {
@@ -247,7 +247,7 @@ export fn zbilateralCreate(in: ?*const c.VSMap, out: ?*c.VSMap, userData: ?*anyo
 
     i = 0;
     while (i < m) : (i += 1) {
-        var o: usize = @intCast(vsapi.?.mapGetInt.?(in, "planes", @as(c_int, @intCast(i)), 0));
+        const o: usize = @intCast(vsapi.?.mapGetInt.?(in, "planes", @as(c_int, @intCast(i)), 0));
         if ((o < 0) or (o >= n)) {
             vsapi.?.mapSetError.?(out, "Bilateral: plane index out of range");
             vsapi.?.freeNode.?(d.node1);
@@ -403,7 +403,7 @@ export fn zbilateralCreate(in: ?*const c.VSMap, out: ?*c.VSMap, userData: ?*anyo
         }
     }
 
-    var data: *ZbilateralData = allocator.create(ZbilateralData) catch unreachable;
+    const data: *ZbilateralData = allocator.create(ZbilateralData) catch unreachable;
     data.* = d;
 
     var deps = [_]c.VSFilterDependency{
